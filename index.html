@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Ôn Tập Toán 11 - Đề 2 (Pedagogical)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    
+    <!-- Cấu hình MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+        body { font-family: 'Nunito', sans-serif; }
+        .math-content { font-size: 1.1em; }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        .option-card:hover { transform: translateY(-2px); transition: all 0.2s; }
+        .correct-answer { background-color: #d1fae5 !important; border-color: #10b981 !important; }
+        .wrong-answer { background-color: #fee2e2 !important; border-color: #ef4444 !important; }
+        
+        /* Hint Button Style */
+        .hint-btn {
+            font-size: 0.9rem;
+            color: #d97706;
+            background-color: #fffbeb;
+            border: 1px solid #fcd34d;
+            transition: all 0.2s;
+        }
+        .hint-btn:hover {
+            background-color: #fcd34d;
+            color: #78350f;
+        }
+
+        /* Table Styles */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.95em;
+        }
+        .stats-table th, .stats-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: center;
+        }
+        .stats-table th {
+            background-color: #f3f4f6;
+            font-weight: 700;
+            color: #374151;
+        }
+        .stats-table td:first-child, .stats-table th:first-child {
+            font-weight: bold;
+            text-align: left;
+            background-color: #f9fafb;
+        }
+        
+        /* Hint List Style for Part 2 */
+        .hint-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .hint-list li::before {
+            content: "\f05a";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: #d97706;
+            font-size: 0.9em;
+        }
+        .hint-content-box {
+            background-color: #fffbeb;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Entry Modal -->
+    <div id="entryModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900 bg-opacity-95 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 text-center border-t-8 border-blue-500 animate-fade-in-down">
+            <div class="mb-6">
+                <i class="fas fa-user-graduate text-5xl text-blue-500"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Chào mừng bạn!</h2>
+            <p class="text-gray-600 mb-6">Vui lòng nhập họ và tên để bắt đầu bài thi.</p>
+            
+            <div class="text-left mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="studentNameInput">
+                    Họ và Tên:
+                </label>
+                <input type="text" id="studentNameInput" 
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 transition outline-none text-lg" 
+                    placeholder="Ví dụ: Nguyễn Văn A..." onkeypress="handleEnter(event)">
+                <p id="nameError" class="text-red-500 text-sm mt-2 hidden"><i class="fas fa-exclamation-circle mr-1"></i>Vui lòng nhập tên của bạn!</p>
+            </div>
+
+            <button onclick="startGame()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition transform text-lg">
+                <i class="fas fa-play mr-2"></i>Bắt Đầu Làm Bài
+            </button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-graduation-cap text-2xl"></i>
+                <h1 class="text-xl font-bold hidden md:block">Ôn Tập Toán 11 - Đề 2</h1>
+                <h1 class="text-xl font-bold md:hidden">Đề 2</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center bg-white/20 px-3 py-1 rounded-full">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span id="timer" class="font-mono font-bold">45:00</span>
+                </div>
+                <button onclick="submitExam()" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-4 py-1.5 rounded-full font-bold shadow-md transition transform hover:scale-105">
+                    <i class="fas fa-paper-plane mr-2"></i>Nộp Bài
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="max-w-4xl mx-auto space-y-8">
+            
+            <!-- Intro Card -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 border-l-4 border-blue-500">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Đề Ôn Tập Học Kỳ 1 (Đề 2)</h2>
+                <p class="text-gray-600">Cấu trúc đề thi gồm 3 phần: Trắc nghiệm (12 câu), Đúng/Sai (4 câu), Trả lời ngắn (6 câu).</p>
+                <div class="mt-2 p-2 bg-blue-50 rounded text-blue-800 font-semibold" id="displayNameHeader"></div>
+            </div>
+
+            <!-- Part 1 -->
+            <section id="part1-container" class="space-y-6">
+                <div class="flex items-center space-x-2 text-blue-700 border-b pb-2 border-blue-200">
+                    <span class="bg-blue-600 text-white px-3 py-1 rounded-lg font-bold">PHẦN 1</span>
+                    <h3 class="text-xl font-bold">Trắc Nghiệm Khách Quan</h3>
+                </div>
+            </section>
+
+            <!-- Part 2 -->
+            <section id="part2-container" class="space-y-6">
+                <div class="flex items-center space-x-2 text-purple-700 border-b pb-2 border-purple-200">
+                    <span class="bg-purple-600 text-white px-3 py-1 rounded-lg font-bold">PHẦN 2</span>
+                    <h3 class="text-xl font-bold">Trắc Nghiệm Đúng Sai</h3>
+                </div>
+            </section>
+
+            <!-- Part 3 -->
+            <section id="part3-container" class="space-y-6">
+                <div class="flex items-center space-x-2 text-green-700 border-b pb-2 border-green-200">
+                    <span class="bg-green-600 text-white px-3 py-1 rounded-lg font-bold">PHẦN 3</span>
+                    <h3 class="text-xl font-bold">Trả Lời Ngắn</h3>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal Score -->
+    <div id="scoreModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 transform transition-all scale-100 border-t-8 border-yellow-400">
+            <div class="text-center">
+                <div class="mb-4 relative inline-block">
+                    <div class="bg-yellow-100 p-4 rounded-full">
+                        <i class="fas fa-trophy text-4xl text-yellow-500"></i>
+                    </div>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-1">Kết Quả Bài Làm</h2>
+                <div class="text-lg font-bold text-blue-600 mb-4" id="resultName">Học sinh: ...</div>
+                
+                <div class="text-6xl font-black text-gray-800 mb-2" id="totalScore">0.0</div>
+                <div class="text-gray-500 font-bold mb-6">ĐIỂM TỔNG KẾT</div>
+
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                        <div class="text-sm text-green-600 font-bold uppercase tracking-wider">Số câu đúng</div>
+                        <div class="text-2xl font-black text-green-700" id="correctCount">0</div>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                        <div class="text-sm text-purple-600 font-bold uppercase tracking-wider">Thời gian</div>
+                        <div class="text-2xl font-black text-purple-700" id="timeTaken">00:00</div>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fas fa-list-check"></i> Xem Chi Tiết Đáp Án
+                </button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- DỮ LIỆU ĐỀ THI VỚI GỢI Ý SƯ PHẠM (KHÔNG LỘ ĐÁP ÁN) ---
+    const gameData = {
+        // Phần 1: Trắc nghiệm
+        part1: [
+            {
+                id: 1,
+                question: "Đổi số đo của góc $\\alpha=60^{\\circ}$ sang đơn vị radian ta được:",
+                options: ["$\\alpha=\\frac{2\\pi}{3}$", "$\\alpha=\\frac{\\pi}{6}$", "$\\alpha=\\frac{\\pi}{2}$", "$\\alpha=\\frac{\\pi}{3}$"],
+                correct: 3, // D
+                hint: "Sử dụng công thức chuyển đổi đơn vị: $\\alpha_{rad} = \\alpha_{deg} \\cdot \\frac{\\pi}{180}$. Thay số đo độ vào để tính.",
+                explanation: "$60^{\\circ} = 60 \\cdot \\frac{\\pi}{180} = \\frac{\\pi}{3}$ rad."
+            },
+            {
+                id: 2,
+                question: "Cho hai đường thẳng phân biệt $a$ và $b$ trong không gian. Có bao nhiêu vị trí tương đối giữa $a$ và $b$?",
+                options: ["4", "2", "3", "1"],
+                correct: 2, // C
+                hint: "Hai đường thẳng phân biệt trong không gian có thể cùng nằm trên một mặt phẳng (đồng phẳng) hoặc không cùng nằm trên một mặt phẳng nào (không đồng phẳng). Hãy liệt kê các trường hợp cụ thể của 2 khả năng này.",
+                explanation: "Có 3 vị trí tương đối: Cắt nhau, Song song (đồng phẳng) và Chéo nhau (không đồng phẳng). Trùng nhau bị loại do đề cho 'phân biệt'."
+            },
+            {
+                id: 3,
+                question: "Trong các dãy số sau đây, dãy số nào là cấp số cộng?",
+                options: ["1; -3; -6; -9; -12", "1; 3; 7; 11; 15", "1; -3; -5; -7; -9", "1; -2; -5; -8; -11"],
+                correct: 3, // D
+                hint: "Theo định nghĩa, dãy số là cấp số cộng nếu hiệu của số hạng sau trừ đi số hạng liền trước là một hằng số không đổi ($u_{n+1} - u_n = d$). Hãy kiểm tra hiệu này ở từng đáp án.",
+                explanation: "Dãy D có công sai $d = -3$ ($1-3=-2; -2-3=-5; ...$ là sai). Kiểm tra: $u_2-u_1 = -2-1=-3$, $u_3-u_2 = -5-(-2)=-3$. Đúng."
+            },
+            {
+                id: 4,
+                question: `
+                    <div>Khảo sát thời gian tập thể dục trong ngày của một số học sinh khối 11 thu được mẫu số liệu ghép nhóm sau:</div>
+                    <div class="overflow-x-auto my-3">
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Thời gian (phút)</th>
+                                    <th>[0;10)</th>
+                                    <th>[10;20)</th>
+                                    <th>[20;30)</th>
+                                    <th>[30;40)</th>
+                                    <th>[40;50)</th>
+                                    <th>[50;60)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Số học sinh</td>
+                                    <td>7</td>
+                                    <td>13</td>
+                                    <td>9</td>
+                                    <td>18</td>
+                                    <td>22</td>
+                                    <td>6</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>Trung vị của mẫu số liệu thuộc nhóm nào?</div>
+                `,
+                options: ["$[30; 40)$", "$[10; 20)$", "$[20; 30)$", "$[40; 50)$"],
+                correct: 0, // A
+                hint: "Bước 1: Tính cỡ mẫu $N$ (tổng số học sinh). <br> Bước 2: Xác định vị trí của trung vị là $N/2$. <br> Bước 3: Tính tần số tích lũy của từng nhóm. Nhóm chứa trung vị là nhóm đầu tiên có tần số tích lũy lớn hơn hoặc bằng giá trị $N/2$.",
+                explanation: "$N = 75$. Trung vị ở vị trí 37,5. Tần số tích lũy các nhóm lần lượt là: 7, 20, 29, 47... Vì $29 < 37,5 < 47$ nên trung vị thuộc nhóm có tích lũy 47, tức là [30; 40)."
+            },
+            {
+                id: 5,
+                question: "Cho hai góc $\\alpha; \\beta$ thỏa mãn $\\alpha+\\beta=\\frac{\\pi}{2}$. Hỏi khẳng định nào sau đây đúng?",
+                options: ["$\\sin\\alpha=\\sin\\beta$", "$\\sin\\alpha=\\cos\\beta$", "$\\sin\\alpha=-\\cos\\beta$", "$\\sin\\alpha=-\\sin\\beta$"],
+                correct: 1, // B
+                hint: "Hai góc có tổng bằng $\\frac{\\pi}{2}$ là hai góc phụ nhau. Hãy nhớ lại tính chất giá trị lượng giác của hai góc phụ nhau (chéo nhau).",
+                explanation: "Vì $\\alpha+\\beta=\\frac{\\pi}{2}$ nên $\\sin\\alpha = \\cos\\beta$ và $\\cos\\alpha = \\sin\\beta$."
+            },
+            {
+                id: 6,
+                question: "Tìm $\\lim_{x\\rightarrow 2}\\frac{10x}{x+3}$",
+                options: ["$+\\infty$", "$-8$", "2", "4"],
+                correct: 3, // D
+                hint: "Quan sát biểu thức khi $x$ tiến dần đến 2. Nếu mẫu số khác 0, ta có thể thay trực tiếp giá trị $x=2$ vào biểu thức để tính giới hạn.",
+                explanation: "$\\lim_{x\\rightarrow 2}\\frac{10(2)}{2+3} = \\frac{20}{5} = 4$."
+            },
+            {
+                id: 7,
+                question: "Cho cấp số nhân $(u_n)$, $u_1=5$, $q=2$. Số hạng thứ 5 là:",
+                options: ["$u_5=13$", "$u_5=80$", "$u_5=32$", "$u_5=160$"],
+                correct: 1, // B
+                hint: "Sử dụng công thức số hạng tổng quát của cấp số nhân: $u_n = u_1 \\cdot q^{n-1}$. Ở đây cần tính $u_5$, tức là $n=5$.",
+                explanation: "$u_5 = 5 \\cdot 2^{5-1} = 5 \\cdot 16 = 80$."
+            },
+            {
+                id: 8,
+                question: "Tập xác định của hàm số $y=\\cot(x+30^{\\circ})$ là:",
+                options: ["$R\\setminus\\{60^{\\circ}+k180^{\\circ}\\}$", "$R\\setminus\\{-30^{\\circ}+k180^{\\circ}\\}$", "$R\\setminus\\{-30^{\\circ}+k360^{\\circ}\\}$", "$R\\setminus\\{60^{\\circ}+k360^{\\circ}\\}$"],
+                correct: 1, // B
+                hint: "Hàm số $y = \\cot(u)$ xác định khi và chỉ khi $\\sin(u) \\ne 0$, tức là $u \\ne k180^{\\circ}$. Hãy giải điều kiện này với $u = x + 30^{\\circ}$.",
+                explanation: "$x+30^{\\circ} \\neq k180^{\\circ} \\Rightarrow x \\neq -30^{\\circ} + k180^{\\circ}$."
+            },
+            {
+                id: 9,
+                question: `Cho hàm số $f(x) = \\begin{cases} \\frac{x^2+x-2}{x+2} & \\text{khi } x \\ne -2 \\\\ m+1 & \\text{khi } x = -2 \\end{cases}$. Hàm số liên tục tại $x=-2$ khi:`,
+                options: ["$m=3$", "$m=-4$", "$m=0$", "$m=-3$"],
+                correct: 1, // B
+                hint: "Để hàm số liên tục tại $x_0 = -2$, cần thỏa mãn điều kiện: $\\lim_{x \\to -2} f(x) = f(-2)$. <br> Bạn hãy tính giới hạn của hàm số khi $x \\to -2$ (lưu ý khử dạng vô định 0/0) và cho kết quả bằng với $f(-2) = m+1$.",
+                explanation: "$\\lim_{x\\to -2}\\frac{(x-1)(x+2)}{x+2} = -3$. Để liên tục thì $m+1 = -3 \\Rightarrow m=-4$."
+            },
+            {
+                id: 10,
+                question: "Tính $\\lim_{n\\rightarrow +\\infty}\\frac{9n^3+3n-1}{4-3n^3-2n^2}$",
+                options: ["3", "-3", "$-\\frac{9}{4}$", "0"],
+                correct: 1, // B
+                hint: "Đây là giới hạn của dãy số dạng phân thức hữu tỉ. Hãy chia cả tử và mẫu cho lũy thừa cao nhất của $n$ (ở đây là $n^3$). Kết quả sẽ là tỉ số của các hệ số đứng trước lũy thừa cao nhất.",
+                explanation: "Hệ số cao nhất tử là 9, mẫu là -3. Giới hạn = $9/(-3) = -3$."
+            },
+            {
+                id: 11,
+                question: "Tập nghiệm của phương trình $2\\cos x - 1 = 0$ là:",
+                options: ["$\\{\\pm\\frac{\\pi}{3}+k2\\pi\\}$", "$\\{\\pm\\frac{\\pi}{6}+k2\\pi\\}$", "$\\{\\pm\\frac{2\\pi}{3}+k\\pi\\}$", "$\\{\\pm\\frac{2\\pi}{3}+k2\\pi\\}$"],
+                correct: 0, // A
+                hint: "Bước 1: Chuyển vế để đưa về phương trình lượng giác cơ bản $\\cos x = a$. <br> Bước 2: Tìm góc $\\alpha$ sao cho $\\cos \\alpha = a$. <br> Bước 3: Áp dụng công thức nghiệm của phương trình cosin: $x = \\pm \\alpha + k2\\pi$.",
+                explanation: "$\\cos x = 1/2 = \\cos(\\pi/3) \\Rightarrow x = \\pm \\frac{\\pi}{3} + k2\\pi$."
+            },
+            {
+                id: 12,
+                question: "Cho tứ diện ABCD, I, J, K là trung điểm AC, BC, BD. Giao tuyến của (ACD) và (IJK) là:",
+                options: ["Qua K song song AB", "Qua I song song CD", "Qua J song song AC", "Qua J song song CD"],
+                correct: 1, // B
+                hint: "Để tìm giao tuyến của hai mặt phẳng: <br> 1. Tìm điểm chung thứ nhất (dễ thấy). <br> 2. Tìm hai đường thẳng song song, mỗi đường nằm trong một mặt phẳng. (Gợi ý: Xét tính chất đường trung bình trong tam giác BCD). <br> 3. Giao tuyến sẽ đi qua điểm chung và song song với phương của hai đường thẳng đó.",
+                explanation: "JK là đường trung bình tam giác BCD nên $JK // CD$. Giao tuyến đi qua điểm chung I và song song với CD."
+            }
+        ],
+        // Phần 2: Đúng/Sai - Gợi ý chi tiết từng ý
+        part2: [
+            {
+                id: 1,
+                question: "Cho hình chóp S.ABCD đáy bình hành. M, N là trung điểm SA, SB.",
+                items: [
+                    { text: "Giao điểm của SO và (MNC) là trọng tâm tam giác SAC.", isTrue: true },
+                    { text: "Đường thẳng MN cắt đường thẳng CD.", isTrue: false },
+                    { text: "Đường thẳng BC song song với mặt phẳng (SAD).", isTrue: true },
+                    { text: "Gọi P là trung điểm SD. Mặt phẳng (MNP) song song với mặt phẳng (ABCD).", isTrue: true }
+                ],
+                hint: `
+                    <ul class="hint-list">
+                        <li><b>a)</b> Xét trong mặt phẳng $(SAC)$, tìm giao điểm của $SO$ và $MC$. Hãy nhớ lại tính chất trọng tâm tam giác (giao điểm các đường trung tuyến).</li>
+                        <li><b>b)</b> Xét vị trí tương đối của $MN$ với $AB$ (dựa vào tính chất đường trung bình). Sau đó xét quan hệ của $AB$ với $CD$. Từ đó suy ra quan hệ giữa $MN$ và $CD$.</li>
+                        <li><b>c)</b> Để chứng minh đường thẳng song song với mặt phẳng, hãy tìm một đường thẳng nằm trong mặt phẳng $(SAD)$ mà song song với $BC$. (Gợi ý: Tính chất hình bình hành $ABCD$).</li>
+                        <li><b>d)</b> Để chứng minh hai mặt phẳng song song, cần chứng minh mặt phẳng này chứa hai đường thẳng cắt nhau cùng song song với mặt phẳng kia. Hãy xét cặp đường thẳng $(MN, NP)$ so với mặt phẳng đáy.</li>
+                    </ul>
+                `,
+                explanation: "a) Đúng. Giao điểm là trọng tâm G. b) Sai. MN // AB // CD nên không cắt. c) Đúng. BC // AD. d) Đúng. MN//AB, NP//BD."
+            },
+            {
+                id: 2,
+                question: "Cho cấp số nhân $(u_n)$ với $u_1=3, u_2=6$.",
+                items: [
+                    { text: "Công bội $q=2$.", isTrue: true },
+                    { text: "Số hạng $u_5 = \\frac{1}{27}$.", isTrue: false },
+                    { text: "4374 là số hạng thứ 9.", isTrue: false },
+                    { text: "Tổng 50 số hạng đầu là $S_{50} = 2^{50}-1$.", isTrue: false }
+                ],
+                hint: `
+                    <ul class="hint-list">
+                        <li><b>a)</b> Tính công bội dựa vào công thức $q = u_2 / u_1$.</li>
+                        <li><b>b)</b> Tính $u_5$ bằng công thức $u_n = u_1 \\cdot q^{n-1}$. Thay số vào để kiểm tra kết quả.</li>
+                        <li><b>c)</b> Giải phương trình $u_1 \\cdot q^{n-1} = 4374$ để tìm $n$. Kiểm tra xem $n$ có bằng 9 không.</li>
+                        <li><b>d)</b> Áp dụng công thức tính tổng n số hạng đầu: $S_n = u_1 \\frac{q^n - 1}{q - 1}$. Thay các giá trị đã biết vào để đối chiếu.</li>
+                    </ul>
+                `,
+                explanation: "a) Đúng. b) Sai ($u_5=48$). c) Sai (không phải lũy thừa của 2 nhân 3). d) Sai ($S_{50} = 3(2^{50}-1)$)."
+            },
+            {
+                id: 3,
+                question: "Cho phương trình $\\sin(2x-\\frac{\\pi}{4}) = \\sin(x+\\frac{3\\pi}{4})$.",
+                items: [
+                    { text: "Phương trình có nghiệm $x=\\pi+k2\\pi$ và $x=\\frac{\\pi}{6}+k\\frac{2\\pi}{3}$.", isTrue: true },
+                    { text: "Trong khoảng $(0; 2\\pi)$ phương trình có 3 nghiệm.", isTrue: false },
+                    { text: "Tổng các nghiệm trong khoảng $(0; 2\\pi)$ bằng $\\pi$.", isTrue: false },
+                    { text: "Trong khoảng $(0; 2\\pi)$ nghiệm nhỏ nhất bằng $\\frac{7\\pi}{6}$.", isTrue: false }
+                ],
+                hint: `
+                    <ul class="hint-list">
+                        <li><b>a)</b> Giải phương trình lượng giác cơ bản dạng $\\sin A = \\sin B$. Ta có 2 họ nghiệm: $A = B + k2\\pi$ và $A = \\pi - B + k2\\pi$.</li>
+                        <li><b>b)</b> Với mỗi họ nghiệm tìm được, cho nghiệm kẹp giữa $0$ và $2\\pi$ ($0 < x < 2\\pi$) để tìm các giá trị nguyên $k$ thỏa mãn. Đếm số lượng nghiệm.</li>
+                        <li><b>c)</b> Cộng tất cả các giá trị nghiệm $x$ tìm được ở ý b).</li>
+                        <li><b>d)</b> So sánh các giá trị nghiệm $x$ tìm được ở ý b) để tìm ra số nhỏ nhất.</li>
+                    </ul>
+                `,
+                explanation: "a) Đúng. b) Sai (4 nghiệm). c) Sai (Tổng $3.5\\pi$). d) Sai (Nhỏ nhất là $\\pi/6$)."
+            },
+            {
+                id: 4,
+                question: `
+                    <div>Điều tra về số tiền mua đồ dùng học tập trong một tháng của 40 học sinh, ta có mẫu số liệu như sau (đơn vị: nghìn đồng):</div>
+                    <div class="overflow-x-auto my-3">
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Giá trị (x)</th>
+                                    <th>[10; 15)</th>
+                                    <th>[15; 20)</th>
+                                    <th>[20; 25)</th>
+                                    <th>[25; 30)</th>
+                                    <th>[30; 35)</th>
+                                    <th>[35; 40)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Tần số (n)</td>
+                                    <td>2</td>
+                                    <td>5</td>
+                                    <td>15</td>
+                                    <td>8</td>
+                                    <td>9</td>
+                                    <td>1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>Các mệnh đề sau đúng hay sai?</div>
+                `,
+                items: [
+                    { text: "Khoảng biến thiên của mẫu số liệu trên bằng 30.", isTrue: true },
+                    { text: "Số trung bình của mẫu số liệu là 25.", isTrue: true },
+                    { text: "Mốt của mẫu số liệu là $M_o \\approx 19,49$.", isTrue: false },
+                    { text: "Phương sai của mẫu số liệu trên là 35,5.", isTrue: false }
+                ],
+                hint: `
+                    <ul class="hint-list">
+                        <li><b>a)</b> Khoảng biến thiên $R$ bằng hiệu số giữa đầu mút lớn nhất của nhóm cuối cùng và đầu mút nhỏ nhất của nhóm đầu tiên.</li>
+                        <li><b>b)</b> Tính giá trị đại diện $c_i$ của mỗi nhóm (trung bình cộng 2 đầu mút). Sau đó tính số trung bình theo công thức $\\bar{x} = \\frac{1}{N}\\sum n_i c_i$.</li>
+                        <li><b>c)</b> Xác định nhóm chứa mốt (nhóm có tần số lớn nhất). Áp dụng công thức tính mốt $M_o$ cho số liệu ghép nhóm và so sánh kết quả.</li>
+                        <li><b>d)</b> Sử dụng công thức tính phương sai: $s^2 = \\frac{1}{N} \\sum n_i (c_i - \\bar{x})^2$. Tính toán cẩn thận từng thành phần.</li>
+                    </ul>
+                `,
+                explanation: "a) Đúng. b) Đúng. c) Sai (Mốt đúng $\\approx 22,94$). d) Sai (Phương sai đúng là 35)."
+            }
+        ],
+        // Phần 3: Trả lời ngắn - Gợi ý phương pháp
+        part3: [
+            {
+                id: 1,
+                question: "Mực nước của một con sông hàng ngày lên xuống theo thủy triều. Độ sâu $h(m)$ của mực nước con sông tại thời điểm $t$ trong một ngày $0\\le t\\le24$ được tính theo công thức $h=-4~sin(\\frac{\\pi t}{6}+\\frac{\\pi}{3})+5.$ Tính độ sâu của mực nước con sông tại thời điểm 6 giờ sáng.",
+                keywords: ["8,46", "8.46", "5+2căn3", "5+2sqrt(3)", "8,5", "8.5"],
+                hint: "Đề bài hỏi độ sâu tại thời điểm 6 giờ sáng, nghĩa là $t=6$. Bạn chỉ cần thay giá trị $t=6$ vào công thức của $h$. Lưu ý đơn vị trong hàm sin là radian.",
+                explanation: "$h(6) = -4\\sin(\\pi + \\pi/3) + 5 = -4(-\\sqrt{3}/2) + 5 = 2\\sqrt{3} + 5 \\approx 8.46$m."
+            },
+            {
+                id: 2,
+                question: `
+                    <div>Một cửa hàng bán điện thoại khảo sát một số khách hàng xem họ dự định mua điện thoại với mức giá nào. Kết quả khảo sát được ghi lại ở bảng sau:</div>
+                    <div class="overflow-x-auto my-3">
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Mức giá (triệu)</th>
+                                    <th>[4;8)</th>
+                                    <th>[8;12)</th>
+                                    <th>[12;16)</th>
+                                    <th>[16;20)</th>
+                                    <th>[20;24)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Số khách hàng</td>
+                                    <td>36</td>
+                                    <td>62</td>
+                                    <td>60</td>
+                                    <td>18</td>
+                                    <td>12</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>Mức giá trung bình của các khách hàng này dự định mua điện thoại là bao nhiêu triệu đồng? (Làm tròn 2 chữ số thập phân)</div>
+                `,
+                keywords: ["12,04", "12.04", "12"],
+                hint: "Để tính số trung bình của mẫu số liệu ghép nhóm: <br> 1. Tính giá trị đại diện cho mỗi nhóm (trung bình cộng hai đầu mút của nhóm). <br> 2. Tính trung bình cộng theo công thức trọng số: (Tổng các tích của giá trị đại diện với tần số tương ứng) chia cho (Tổng số khách hàng).",
+                explanation: "$\\bar{x} = \\frac{6\\cdot36 + 10\\cdot62 + 14\\cdot60 + 18\\cdot18 + 22\\cdot12}{188} \\approx 12.04$."
+            },
+            {
+                id: 3,
+                question: "Một người vào trường đua ngựa đặt cược, anh ta nghĩ ra một chiến lược, đó là lần đầu anh ta đặt cược 38, nếu thua cược anh ta sẽ gấp 2 số tiền cược so với lần trước đó đến khi nào thắng cược thì thôi. Anh ta đã thua 13 lần liên tiếp và thắng cược ở lần thứ 14. Sau đó anh ta rời khỏi trường đua. Biết rằng nếu thắng anh ta sẽ nhận được số tiền bằng đúng số tiền cược bỏ ra. Khi ra về anh ta lãi bao nhiêu tiền?",
+                keywords: ["38"],
+                hint: "Đây là bài toán ứng dụng của cấp số nhân (chiến thuật gấp thếp). <br> - Tính tổng số tiền đã thua trong 13 ván đầu (tổng của cấp số nhân). <br> - Tính số tiền thắng được ở ván thứ 14. <br> - Tiền lãi = (Tiền thắng ván 14) - (Tổng tiền thua các ván trước).",
+                explanation: "Tổng tiền thua 13 ván là $38(2^{13}-1)$. Tiền thắng ván 14 là $38 \\cdot 2^{13}$. Lãi = $38 \\cdot 2^{13} - 38(2^{13}-1) = 38$."
+            },
+            {
+                id: 4,
+                question: "Cho hình chóp S.ABCD có đáy ABCD là hình vuông cạnh bằng 10. N là điểm trên cạnh SB sao cho $3SN=2SB.$ Một mặt phẳng $\\alpha$ đi qua N, song song với AB và AD, cắt hình chóp theo một tứ giác. Gọi S là diện tích tứ giác thiết diện và $S=\\frac{4a}{b}.$ với $\\frac{a}{b}$ là phân số tối giản, $a;b\\in\\mathbb{N}$ . Tính $P=a+b+1$",
+                keywords: ["110"],
+                hint: "1. Xác định hình dạng của thiết diện: Vì mặt phẳng song song với đáy nên thiết diện là hình gì? <br> 2. Xác định tỉ số đồng dạng: Từ giả thiết $3SN = 2SB$, hãy tìm tỉ số $k = SN/SB$. <br> 3. Diện tích thiết diện tỉ lệ với diện tích đáy theo công thức: $S_{td} = k^2 \\cdot S_{ABCD}$.",
+                explanation: "$SN/SB = 2/3$. $S = (2/3)^2 \\cdot 100 = 400/9$. $a=100, b=9$. $P = 100+9+1 = 110$."
+            },
+            {
+                id: 5,
+                question: "Tìm $\\lim_{x\\rightarrow 2}\\frac{4-x^2}{\\sqrt{x+7}-3}$",
+                keywords: ["-24"],
+                hint: "Giới hạn này có dạng vô định 0/0. <br> 1. Nhân cả tử và mẫu với biểu thức liên hợp của mẫu số $(\\sqrt{x+7}+3)$. <br> 2. Phân tích tử số $4-x^2$ thành nhân tử. <br> 3. Rút gọn nhân tử chung làm cho mẫu bằng 0, sau đó thay số.",
+                explanation: "Nhân liên hợp ra $\\lim_{x \\to 2} [-(x+2)(\\sqrt{x+7}+3)] = -4(3+3) = -24$."
+            },
+            {
+                id: 6,
+                question: "Người ta trồng cây theo hình tam giác, với quy luật: ở hàng thứ nhất có 1 cây, ở hàng thứ hai có 2 cây, ở hàng thứ ba có 3 cây, ...ở hàng thứ n có n cây. Biết rằng người ta trồng hết 4950 cây. Hỏi số hàng cây được trồng theo cách trên là bao nhiêu?",
+                keywords: ["99"],
+                hint: "Số cây ở các hàng lập thành một cấp số cộng đơn giản: 1, 2, 3... <br> Tổng số cây trồng được chính là tổng của $n$ số tự nhiên đầu tiên. <br> Hãy dùng công thức tổng $S_n = \\frac{n(n+1)}{2}$, cho $S_n = 4950$ và giải phương trình tìm $n$.",
+                explanation: "$n(n+1)/2 = 4950 \\Rightarrow n(n+1) = 9900 \\Rightarrow n=99$."
+            }
+        ]
+    };
+
+    // --- LOGIC GAME ---
+    let userAnswers = { part1: {}, part2: {}, part3: {} };
+    let startTime;
+    let timerInterval;
+    let studentName = "";
+
+    function initGame() {
+        renderPart1();
+        renderPart2();
+        renderPart3();
+        if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+            MathJax.typesetPromise();
+        }
+    }
+
+    function handleEnter(event) {
+        if (event.key === "Enter") {
+            startGame();
+        }
+    }
+
+    function startGame() {
+        const input = document.getElementById('studentNameInput');
+        const errorMsg = document.getElementById('nameError');
+        const nameVal = input.value.trim();
+
+        if (!nameVal) {
+            errorMsg.classList.remove('hidden');
+            input.classList.add('border-red-500', 'focus:ring-red-200');
+            return;
+        }
+
+        studentName = nameVal;
+        document.getElementById('displayNameHeader').textContent = `Học sinh: ${studentName}`;
+        document.getElementById('entryModal').classList.add('hidden'); 
+        startTimer(45 * 60); 
+    }
+
+    function toggleHint(elementId) {
+        const hintEl = document.getElementById(elementId);
+        if (hintEl.classList.contains('hidden')) {
+            hintEl.classList.remove('hidden');
+        } else {
+            hintEl.classList.add('hidden');
+        }
+    }
+
+    function startTimer(duration) {
+        let timer = duration, minutes, seconds;
+        const display = document.querySelector('#timer');
+        startTime = new Date();
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            display.textContent = minutes + ":" + seconds;
+            if (--timer < 0) {
+                clearInterval(timerInterval);
+                submitExam();
+            }
+        }, 1000);
+    }
+
+    // Render Part 1
+    function renderPart1() {
+        const container = document.getElementById('part1-container');
+        gameData.part1.forEach((q, index) => {
+            const div = document.createElement('div');
+            div.className = "bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition question-block";
+            div.id = `p1-q${q.id}`;
+            const correctLetter = String.fromCharCode(65 + q.correct);
+            div.innerHTML = `
+                <div class="flex gap-3 mb-4">
+                    <span class="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full h-fit whitespace-nowrap">Câu ${index + 1}</span>
+                    <div class="text-gray-800 font-medium math-content pt-1 w-full">${q.question}</div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 ml-0 md:ml-12">
+                    ${q.options.map((opt, i) => `
+                        <label class="option-card cursor-pointer flex items-center p-3 rounded-lg border border-gray-200 hover:bg-blue-50 transition relative group">
+                            <input type="radio" name="p1_q${q.id}" value="${i}" class="mr-3 w-5 h-5 text-blue-600 focus:ring-blue-500" onchange="saveAnswer('part1', ${q.id}, ${i})">
+                            <span class="math-content text-gray-700">${opt}</span>
+                        </label>
+                    `).join('')}
+                </div>
+                <div class="ml-12 mt-3">
+                    <button onclick="toggleHint('p1-hint-${q.id}')" class="hint-btn px-3 py-1 rounded-md flex items-center gap-2">
+                        <i class="fas fa-lightbulb"></i> Gợi ý
+                    </button>
+                    <div id="p1-hint-${q.id}" class="hidden mt-2 p-3 bg-yellow-50 text-gray-700 text-sm rounded-lg border border-yellow-200">
+                        <div class="math-content">${q.hint}</div>
+                    </div>
+                </div>
+                <div class="explanation hidden mt-4 ml-12 p-4 bg-green-50 rounded-lg border-l-4 border-green-500 text-sm text-gray-700">
+                    <div class="font-bold text-green-700 mb-1 text-lg"><i class="fas fa-check-circle mr-2"></i>Đáp án: ${correctLetter}</div>
+                    <div class="font-bold text-gray-700 mb-1">Giải thích chi tiết:</div>
+                    <div class="math-content">${q.explanation}</div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // Render Part 2
+    function renderPart2() {
+        const container = document.getElementById('part2-container');
+        gameData.part2.forEach((q, index) => {
+            const div = document.createElement('div');
+            div.className = "bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition question-block";
+            div.id = `p2-q${q.id}`;
+            div.innerHTML = `
+                <div class="mb-4">
+                    <span class="bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-full mr-2">Câu ${index + 1}</span>
+                    <span class="text-gray-800 font-medium math-content w-full block">${q.question}</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-600">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 w-3/4">Nội dung</th>
+                                <th scope="col" class="px-6 py-3 text-center">Đúng</th>
+                                <th scope="col" class="px-6 py-3 text-center">Sai</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${q.items.map((item, i) => `
+                                <tr class="bg-white border-b hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-900 math-content">${item.text}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <input type="radio" name="p2_q${q.id}_i${i}" value="true" class="w-5 h-5 text-purple-600 focus:ring-purple-500" onchange="saveAnswer('part2', '${q.id}_${i}', true)">
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <input type="radio" name="p2_q${q.id}_i${i}" value="false" class="w-5 h-5 text-purple-600 focus:ring-purple-500" onchange="saveAnswer('part2', '${q.id}_${i}', false)">
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                 <div class="mt-3">
+                    <button onclick="toggleHint('p2-hint-${q.id}')" class="hint-btn px-3 py-1 rounded-md flex items-center gap-2">
+                        <i class="fas fa-lightbulb"></i> Gợi ý
+                    </button>
+                    <div id="p2-hint-${q.id}" class="hidden mt-2 p-3 bg-yellow-50 text-gray-700 text-sm rounded-lg border border-yellow-200">
+                        <div class="hint-content-box p-2 rounded math-content">${q.hint}</div>
+                    </div>
+                </div>
+                <div class="explanation hidden mt-4 p-4 bg-green-50 rounded-lg border-l-4 border-green-500 text-sm text-gray-700">
+                    <div class="font-bold text-green-700 mb-1 text-lg"><i class="fas fa-check-circle mr-2"></i>Giải thích & Đáp án:</div>
+                    <div class="math-content">${q.explanation}</div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // Render Part 3
+    function renderPart3() {
+        const container = document.getElementById('part3-container');
+        gameData.part3.forEach((q, index) => {
+            const div = document.createElement('div');
+            div.className = "bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition question-block";
+            div.id = `p3-q${q.id}`;
+            div.innerHTML = `
+                <div class="mb-4">
+                    <span class="bg-green-100 text-green-800 font-bold px-3 py-1 rounded-full mr-2">Câu ${index + 1}</span>
+                    <span class="text-gray-800 font-medium math-content w-full block">${q.question}</span>
+                </div>
+                <div class="ml-0 md:ml-12">
+                    <input type="text" 
+                        class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition" 
+                        placeholder="Nhập câu trả lời của bạn..." 
+                        onchange="saveAnswer('part3', ${q.id}, this.value)"
+                        id="input-p3-${q.id}">
+                </div>
+                 <div class="ml-12 mt-3">
+                    <button onclick="toggleHint('p3-hint-${q.id}')" class="hint-btn px-3 py-1 rounded-md flex items-center gap-2">
+                        <i class="fas fa-lightbulb"></i> Gợi ý
+                    </button>
+                    <div id="p3-hint-${q.id}" class="hidden mt-2 p-3 bg-yellow-50 text-gray-700 text-sm rounded-lg border border-yellow-200">
+                        <div class="math-content">${q.hint}</div>
+                    </div>
+                </div>
+                <div class="explanation hidden mt-4 ml-12 p-4 bg-green-50 rounded-lg border-l-4 border-green-500 text-sm text-gray-700">
+                    <div class="font-bold text-green-700 mb-1 text-lg"><i class="fas fa-check-circle mr-2"></i>Đáp án: ${q.keywords[0]}</div>
+                    <div class="font-bold text-gray-700 mb-1">Giải thích chi tiết:</div>
+                    <div class="math-content">${q.explanation}</div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function saveAnswer(part, id, value) {
+        userAnswers[part][id] = value;
+    }
+
+    function normalizeText(text) {
+        if (!text) return "";
+        return text.toString().toLowerCase().replace(/\s/g, '').replace(/,/g, '.');
+    }
+
+    function submitExam() {
+        clearInterval(timerInterval);
+        let totalScore = 0;
+        let correctCount = 0;
+
+        // Grade Part 1
+        gameData.part1.forEach(q => {
+            const userAns = userAnswers.part1[q.id];
+            const block = document.getElementById(`p1-q${q.id}`);
+            const inputs = block.querySelectorAll('input');
+            const explanation = block.querySelector('.explanation');
+            
+            explanation.classList.remove('hidden');
+            inputs.forEach(input => input.disabled = true);
+
+            if (userAns != undefined && userAns == q.correct) {
+                totalScore += 0.25;
+                correctCount++;
+                block.classList.add('border-green-400', 'bg-green-50');
+                block.querySelectorAll('.option-card')[userAns].classList.add('correct-answer');
+            } else {
+                block.classList.add('border-red-400', 'bg-red-50');
+                if (userAns != undefined) block.querySelectorAll('.option-card')[userAns].classList.add('wrong-answer');
+                block.querySelectorAll('.option-card')[q.correct].classList.add('correct-answer');
+            }
+        });
+
+        // Grade Part 2
+        gameData.part2.forEach(q => {
+            const block = document.getElementById(`p2-q${q.id}`);
+            const explanation = block.querySelector('.explanation');
+            explanation.classList.remove('hidden');
+            let correctItems = 0;
+
+            q.items.forEach((item, i) => {
+                const userAns = userAnswers.part2[`${q.id}_${i}`];
+                const rows = block.querySelectorAll('tbody tr');
+                const inputs = rows[i].querySelectorAll('input');
+                inputs.forEach(inp => inp.disabled = true);
+
+                if (userAns === item.isTrue) {
+                    correctItems++;
+                    rows[i].classList.add('bg-green-100');
+                } else {
+                    rows[i].classList.add('bg-red-100');
+                }
+            });
+
+            if (correctItems === 1) totalScore += 0.1;
+            if (correctItems === 2) totalScore += 0.25;
+            if (correctItems === 3) totalScore += 0.5;
+            if (correctItems === 4) totalScore += 1.0;
+        });
+
+        // Grade Part 3
+        gameData.part3.forEach(q => {
+            const userAns = normalizeText(userAnswers.part3[q.id]);
+            const block = document.getElementById(`p3-q${q.id}`);
+            const input = document.getElementById(`input-p3-${q.id}`);
+            const explanation = block.querySelector('.explanation');
+            
+            explanation.classList.remove('hidden');
+            input.disabled = true;
+
+            const isCorrect = q.keywords.some(k => normalizeText(k) === userAns);
+            
+            if (isCorrect) {
+                totalScore += 0.5; // Giả định 0.5đ cho câu trả lời ngắn
+                correctCount++;
+                input.classList.add('border-green-500', 'bg-green-100', 'text-green-800');
+            } else {
+                input.classList.add('border-red-500', 'bg-red-100', 'text-red-800');
+            }
+        });
+
+        // Show Result
+        const timeSpent = new Date() - startTime;
+        const minutes = Math.floor(timeSpent / 60000);
+        const seconds = ((timeSpent % 60000) / 1000).toFixed(0);
+
+        document.getElementById('totalScore').textContent = totalScore.toFixed(2);
+        document.getElementById('correctCount').textContent = correctCount;
+        document.getElementById('timeTaken').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        document.getElementById('resultName').textContent = `Học sinh: ${studentName}`;
+
+        document.getElementById('scoreModal').classList.remove('hidden');
+        window.scrollTo(0, 0);
+    }
+
+    function closeModal() {
+        document.getElementById('scoreModal').classList.add('hidden');
+    }
+
+    // Start
+    initGame();
+</script>
+</body>
+</html>
